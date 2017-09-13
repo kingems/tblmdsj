@@ -3,9 +3,9 @@
 // ==UserScript==
 // @name          淘宝联盟到手价显示
 // @namespace     https://github.com/kingems/tblmdsj
-// @version       0.1.0
+// @version       0.1.1
 // @author        kingem(kingem@126.com)
-// @description   淘宝联盟到手价显示
+// @description   淘宝联盟搜索结果显示到手价
 // @grant         GM_addStyle
 // @require       https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
 // @include       http://pub.alimama.com/promo/*
@@ -17,13 +17,16 @@
 var shareRatio = 0.95,
     fee = 0.1;
     function getPrices(singleLine) {
-        var values = [], match;
-        $(singleLine).find(".yuan").each(function() {
-            match = $(this).parent().text().match(/￥([\d,]+\.\d{2})/);
-            if (match.length > 1) {
-                values.push(match[1].replace(",", ""));
-            }
-        });
+        var values = [], match,percent;
+        var text = $(singleLine).text();
+        match = text.match(/￥([\d,]+\.\d{2})/);;
+        if (match) {
+            values.push(match[1].replace(",", ""));
+        }
+        percent = text.match(/(\d{2}\.\d{2})%/);
+        if (percent){
+            values.push(percent[1].replace("%", ""));
+        }
         return values;
     }
     function process(searchResults) {
@@ -38,16 +41,22 @@ var shareRatio = 0.95,
                     };
                     var result = getPrices(contentLines);
                     var price = parseFloat(result[0])- youhui,
-                        commission = parseFloat(result[1]) ,
-                        value = String(Math.round((price - commission * shareRatio * (1-fee)) * 100, 2)),
+                        commission = price * parseFloat(result[1])/100,
+                        value = String(Math.round((price - commission * shareRatio * (1-fee))*100, 2)),
                         integerPrice = value.substr(0, value.length-2),
                         decimalPrice = value.substr(value.length-2, 2),
+                        commissionValue = String(Math.round(commission*100, 2)),
+                        commissionIntegerPrice = commissionValue.substr(0, commissionValue.length-2),
+                        commissionDecimalPrice = commissionValue.substr(commissionValue.length-2, 2),
                         addHtml = $('<div class="content-line btn-brand"></div>');
-                    $(addHtml).html('<span class="number number-24"><b>到手价</b>：￥</span>'
+                    $(addHtml).html('<span class="number number-24"><b>到手价</b>：￥'
                                  + '<span class="integer">' + (integerPrice.length > 0 ? integerPrice : '0') + '</span>'
                                  + '<span class="pointer">.</span>'
                                  + '<span class="decimal">' + decimalPrice + '</span></span>'
-                                 +'<span class="number number-24"><b>&nbsp;&nbsp;&nbsp;佣金</b>：￥'+commission+'<span>');
+                                 + '<p><span class="number number-24"><b>&nbsp;&nbsp;&nbsp;佣金</b>：￥'
+                                 + '<span class="integer">' + (commissionIntegerPrice.length > 0 ? commissionIntegerPrice : '0') + '</span>'
+                                 + '<span class="pointer">.</span>'
+                                 + '<span class="decimal">' + commissionDecimalPrice + '</span></span></p>');
                     $(addHtml).insertBefore($(contentLines).eq(1));
                     $(contentLines).last().remove();
                 });
@@ -65,8 +74,8 @@ var shareRatio = 0.95,
                     };
                     var result = getPrices(contentLines);
                     var price = parseFloat(result[0])- youhui,
-                        commission = parseFloat(result[1]),
-                        value = String(Math.round((price - commission * shareRatio * (1-fee)) * 100, 2)),
+                        commission = price * parseFloat(result[1])/100,
+                        value = String(Math.round((price- commission * shareRatio * (1-fee))*100, 2)),
                         integerPrice = value.substr(0, value.length-2),
                         decimalPrice = value.substr(value.length-2, 2),
                         addHtml = $('<td width="10%" class="left commission number number-16 color-red" p-id="361"></td>');
