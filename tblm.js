@@ -23,9 +23,9 @@ var shareRatio = 0.95,
         if (match) {
             values.push(match[1].replace(",", ""));
         }
-        percent = text.match(/(\d{2}\.\d{2})%/);
+        percent = text.match(/(\.\d{2})*(\d+\.\d{2})%/);
         if (percent){
-            values.push(percent[1].replace("%", ""));
+            values.push(percent[2].replace("%", ""));
         }
         return values;
     }
