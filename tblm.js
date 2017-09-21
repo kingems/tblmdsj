@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name          淘宝联盟到手价显示
 // @namespace     https://github.com/kingems/tblmdsj
-// @version       0.1.1
+// @version       0.1.2
 // @author        kingem(kingem@126.com)
 // @description   淘宝联盟搜索结果显示到手价
 // @grant         GM_addStyle
@@ -30,6 +30,9 @@ var shareRatio = 0.95,
         return values;
     }
     function process(searchResults) {
+        if (location.href.indexOf("channel")==-1){
+            shareRatio = 1;
+        }
         if (location.href.indexOf("table")==-1){
             var list = $(searchResults).find(".box-content");
             if (list.size() > 0) {
