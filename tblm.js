@@ -3,12 +3,12 @@
 // ==UserScript==
 // @name          淘宝联盟到手价显示
 // @namespace     https://github.com/kingems/tblmdsj
-// @version       0.1.2
+// @version       0.1.1
 // @author        kingem(kingem@126.com)
 // @description   淘宝联盟搜索结果显示到手价
 // @grant         GM_addStyle
 // @require       https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
-// @include       http://pub.alimama.com/promo/*
+// @include       http://pub.alimama.com/*
 // @run-at        document-end
 // ==/UserScript==
 //
@@ -44,8 +44,8 @@ var shareRatio = 0.95,
                     };
                     var result = getPrices(contentLines);
                     var price = parseFloat(result[0])- youhui,
-                        commission = price * parseFloat(result[1])/100,
-                        value = String(Math.round((price - commission * shareRatio * (1-fee))*100, 2)),
+                        commission = price * parseFloat(result[1])* shareRatio * (1-fee)/100,
+                        value = String(Math.round((price - commission)*100, 2)),
                         integerPrice = value.substr(0, value.length-2),
                         decimalPrice = value.substr(value.length-2, 2),
                         commissionValue = String(Math.round(commission*100, 2)),
@@ -77,8 +77,8 @@ var shareRatio = 0.95,
                     };
                     var result = getPrices(contentLines);
                     var price = parseFloat(result[0])- youhui,
-                        commission = price * parseFloat(result[1])/100,
-                        value = String(Math.round((price- commission * shareRatio * (1-fee))*100, 2)),
+                        commission = price * parseFloat(result[1])* shareRatio * (1-fee)/100,
+                        value = String(Math.round((price- commission)*100, 2)),
                         integerPrice = value.substr(0, value.length-2),
                         decimalPrice = value.substr(value.length-2, 2),
                         addHtml = $('<td width="10%" class="left commission number number-16 color-red" p-id="361"></td>');
